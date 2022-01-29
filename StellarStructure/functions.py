@@ -143,3 +143,8 @@ def plot_graph(r_list, M_list, rho_list, P_list):
 
     plt.show()
     # plt.savefig('RK4_TOV.png', facecolor='white', transparent=False)
+
+
+if __name__ == '__main__':
+    # python -m StellarStructure.functions
+    print('This is for functions to be imported only.')

@@ -1,5 +1,6 @@
 """
-In cgs units
+Solve for the structure of a white dwarf.
+Constants are in cgs units.
 """
 
 from StellarStructure.SolveEOS import SolveEOS
@@ -59,5 +60,13 @@ def MR_relation(rho_low=3, rho_high=13):
     ax.legend()
     plt.show()
 
-# single_test(1e9)
-MR_relation()
+
+def run():
+    """
+    Change this function to choose which to run
+    """
+    # single_test()
+    MR_relation()
+
+if __name__ == '__main__':
+    run()

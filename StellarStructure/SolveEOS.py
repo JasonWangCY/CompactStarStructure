@@ -35,3 +35,8 @@ class SolveEOS:
             fn.plot_graph(r_list, M_list, rho_list, P_list)
 
         return r_list, M_list, rho_list, P_list
+
+if __name__ == '__main__':
+    # python -m StellarStructure.SolveEOS
+    solve = SolveEOS(0.0001, 10000)
+    print(solve.__dict__)

@@ -39,3 +39,10 @@ class CGS_unit:
     K_nr = 1.0036e13
     K_rel = 1.2435e15
     G = 6.6741e-11 * 1e3
+
+if __name__ == '__main__':
+    cgs = CGS_unit
+    v = cgs.__dict__
+    v_list = list(cgs.__dict__.keys())
+    for key in v_list[1:-3]:
+        print(key, '=', v[key])
