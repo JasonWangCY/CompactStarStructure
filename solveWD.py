@@ -65,8 +65,8 @@ def run():
     """
     Change this function to choose which to run
     """
-    # single_test()
-    MR_relation()
+    single_test()
+    # MR_relation()
 
 if __name__ == '__main__':
     run()
