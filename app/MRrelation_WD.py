@@ -4,25 +4,14 @@ Constants are in cgs units.
 """
 
 from StellarStructure.SolveEOS import SolveEOS
-import StellarStructure.functions as fn
 from StellarStructure.constants import CGS_unit as cg
 import matplotlib.pyplot as plt
 import numpy as np
 
-
-def single_test(rho0=1e9):
-    """
-    Test for a specific value of rho to model structure of a White Dward (WD)
-    """
-    r0 = 0.0001
-    h = 10000
-
-    M0 = 4/3 * cg.pi * r0**3 * rho0
-    eos = SolveEOS(r0, h)
-    r_list, M_list, rho_list, P_list = eos.solve_TOS(M0, rho0, TOV=False, graph_flag=True)
-
-
 def MR_relation(rho_low=3, rho_high=13):
+    """
+    Generate the mass-radius relationship of a white dwarf
+    """
     r0 = 0.0001
     rho0_list = np.logspace(rho_low, rho_high, 50)
     h = 10000
@@ -61,12 +50,5 @@ def MR_relation(rho_low=3, rho_high=13):
     plt.show()
 
 
-def run():
-    """
-    Change this function to choose which to run
-    """
-    single_test()
-    # MR_relation()
-
 if __name__ == '__main__':
-    run()
+    MR_relation()
