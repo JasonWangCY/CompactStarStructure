@@ -7,6 +7,7 @@ from StellarStructure.SolveEOS import SolveEOS
 from StellarStructure.constants import CGS_unit as cg
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
 
 def MR_relation(rho_low=3, rho_high=13):
     """
@@ -48,6 +49,10 @@ def MR_relation(rho_low=3, rho_high=13):
     ax.tick_params(axis='both', which='major', direction = 'in')
     ax.legend()
     plt.show()
+
+    df = pd.DataFrame({"totM_list": totM_list, "totR_list": totR_list, \
+        "totM_list_TOV": totM_list_TOV, "totR_list_TOV": totR_list_TOV})
+    df.to_csv("app/output/MRrelation_WD.csv", index=False)
 
 
 if __name__ == '__main__':
