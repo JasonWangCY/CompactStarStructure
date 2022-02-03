@@ -34,11 +34,24 @@ class SI_unit:
 
 class CGS_unit:
     pi = np.pi
-    c = 2.9979e8 * 1e2
+    c = 2.9979e10
     Y_e = 0.5
-    K_nr = 1.0036e13
-    K_rel = 1.2435e15
-    G = 6.6741e-11 * 1e3
+    h = 6.6261e-27
+    m_e = 9.1094e-28
+    me4_h3 = (9.1094)**4 / (6.6261)**3 * 1e-31      # m_e^4 / h^3  
+
+    m_u = 1.6605e-24                                # rho*Y_e = 9.74e5 * x^3
+    k0 = 8*pi*m_u/3 * (h/m_e/c)**(-3)
+    K_nr = 8*pi*c**5 / 15 * me4_h3 / k0**(5/3)
+    K_rel = 2*pi*c**5 / 3 * me4_h3 / k0**(4/3)
+
+    GeVc2 = 1.7827e-24                              # 1 GeV/c^2 = 1.7827e-24 g
+    GeVc2_h3 = (1.7827)**4 * (6.6261)**3 * 1e-15     # m_dm^4 / h^3
+    k0_dm = 8*pi*m_u/3 * (h/GeVc2/c)**(-3)
+    K_nr_dm = 8*pi*c**5 / 15 * GeVc2_h3 / k0_dm**(5/3)
+    K_rel_dm = 2*pi*c**5 / 3 * GeVc2_h3 / k0_dm**(4/3)
+
+    G = 6.6741e-8
 
 if __name__ == '__main__':
     cgs = CGS_unit

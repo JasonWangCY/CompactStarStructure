@@ -9,11 +9,13 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
-def MR_relation(rho_low=3, rho_high=13):
+def MR_relation(rho_low=3, rho_high=13, rho_dm0=1e8, m_dm=0):
     """
     Generate the mass-radius relationship of a white dwarf
     """
     r0 = 0.0001
+    r_dm0 = 0.0001
+    M_dm0 = 4/3 * cg.pi * r_dm0**3 * rho_dm0
     rho0_list = np.logspace(rho_low, rho_high, 50)
     h = 10000
     totR_list = []
@@ -21,16 +23,18 @@ def MR_relation(rho_low=3, rho_high=13):
     totR_list_TOV = []
     totM_list_TOV = []
 
-    eos = SolveEOS(r0, h)
+    eos = SolveEOS(r0, r_dm0, h, m_dm)
 
     for rho0 in rho0_list:
         M0 = 4/3 * cg.pi * r0**3 * rho0
 
-        r_list, M_list, rho_list, P_list = eos.solve_TOS(M0, rho0, TOV=False, graph_flag=False)       
+        r_list, M_list, rho_list, P_list, r_dm_list, M_dm_list, rho_dm_list, P_dm_list\
+             = eos.solve_TOS(M0, rho0, M_dm0, rho_dm0, TOV=False, graph_flag=False)       
         total_R = r_list[-1].real
         total_M = M_list[-1].real
 
-        r_list_TOV, M_list_TOV, rho_list_TOV, P_list_TOV = eos.solve_TOS(M0, rho0, TOV=True, graph_flag=False) 
+        r_list_TOV, M_list_TOV, rho_list_TOV, P_list_TOV, r_dm_list_TOV, M_dm_list_TOV, rho_dm_list_TOV, P_dm_list_TOV\
+             = eos.solve_TOS(M0, rho0, M_dm0, rho_dm0, TOV=True, graph_flag=False) 
         total_R_TOV = r_list_TOV[-1].real
         total_M_TOV = M_list_TOV[-1].real
 
@@ -52,7 +56,7 @@ def MR_relation(rho_low=3, rho_high=13):
 
     df = pd.DataFrame({"totM_list": totM_list, "totR_list": totR_list, \
         "totM_list_TOV": totM_list_TOV, "totR_list_TOV": totR_list_TOV})
-    df.to_csv("app/output/MRrelation_WD.csv", index=False)
+    df.to_csv("app/output/MRrelation_WD_dm0.csv", index=False)
 
 
 if __name__ == '__main__':

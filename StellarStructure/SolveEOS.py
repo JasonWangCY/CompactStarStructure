@@ -8,15 +8,17 @@ class SolveEOS:
     """
     Solve the hydrostatic equations with RK4 and the corresponding equation of state
     """
-    def __init__(self, r0, h):
+    def __init__(self, r0, r_dm0, h, m_dm):
         """
         Inputs:
             - r0, rho0, M0: initial conditions
         """
         self.r0 = r0
+        self.r_dm0 = r_dm0
+        self.m_dm = m_dm
         self.h = h
 
-    def solve_TOS(self, M0, rho0, TOV=True, graph_flag=True):
+    def solve_TOS(self, M0, rho0, M_dm0, rho_dm0, TOV=True, graph_flag=True):
         """
         Input flags:
             - TOV: Newtonian method (default as False)
@@ -29,12 +31,15 @@ class SolveEOS:
             drhodr = fn.drhodr_Newt
         dMdr = fn.dMdr
 
-        r_list, M_list, rho_list, P_list = fn.RK4(self.r0, M0, rho0, self.h, fn.EOS, dMdr, drhodr)
+        r_list, M_list, rho_list, P_list, r_dm_list, M_dm_list, rho_dm_list, P_dm_list \
+            = fn.RK4(self.r0, M0, rho0, \
+            self.r_dm0, M_dm0, rho_dm0, self.h, dMdr, drhodr, self.m_dm)
 
         if graph_flag:
             fn.plot_graph(r_list, M_list, rho_list, P_list)
+            fn.plot_graph(r_dm_list, M_dm_list, rho_dm_list, P_dm_list)
 
-        return r_list, M_list, rho_list, P_list
+        return r_list, M_list, rho_list, P_list, r_dm_list, M_dm_list, rho_dm_list, P_dm_list
 
 if __name__ == '__main__':
     # python -m StellarStructure.SolveEOS
