@@ -28,34 +28,44 @@ def EOS(rho, m_dm):
     """
     Combined equation of state for WD
     """
-    P_nr = EOS_nr(rho, m_dm)
-    P_rel = EOS_rel(rho, m_dm)
-    sqrt_term = np.sqrt( 1/P_nr/P_nr + 1/P_rel/P_rel )
-    return 1/sqrt_term
+    # P_nr = EOS_nr(rho, m_dm)
+    # P_rel = EOS_rel(rho, m_dm)
+    # sqrt_term = np.sqrt( 1/P_nr/P_nr + 1/P_rel/P_rel )
+    # return 1/sqrt_term
+
+    x = cg.x_const * rho**(1/3)
+    return cg.K_exact * ( x*np.sqrt(1+x*x)*(2/3*x*x-1) + np.log(x+np.sqrt(1+x*x)) )
 
 def EOS_deriv(rho, m_dm):
     """
     First derivative of the combined equation of state
     """
-    P_nr = EOS_nr(rho, m_dm)
-    P_rel = EOS_rel(rho, m_dm)
-    P = EOS(rho, m_dm)
-    return P/rho * ( 5/3*(P/P_nr)**2 + 4/3*(P/P_rel)**2 )
+    # P_nr = EOS_nr(rho, m_dm)
+    # P_rel = EOS_rel(rho, m_dm)
+    # P = EOS(rho, m_dm)
+    # return P/rho * ( 5/3*(P/P_nr)**2 + 4/3*(P/P_rel)**2 )
+
+    x = cg.x_const * rho**(1/3)
+    term1 = np.sqrt(1+x*x) * (2/3*x*x-1)
+    term2 = x*x/np.sqrt(1+x*x) * (2/3*x*x-1)
+    term3 = x*np.sqrt(1+x*x)*4/3*x
+    term4 = ( 1+x/np.sqrt(1+x*x) ) / (x + np.sqrt(1+x*x))
+    return cg.K_exact*(term1+term2+term3+term4) * cg.x_const * rho**(-2/3) / 3
 # ---------------------------------------------------------------------------
 
 # ---------------------------------------------------------------------------
 # Dark matter
 def EOS_rel_dm(rho, m_dm):
     """
-    Equation of state for relativistic gas: P(rho)
+    Equation of state for relativistic dark matter: P(rho)
     """
     return cg.K_rel_dm * (rho)**(4/3)
 
 def EOS_nr_dm(rho, m_dm):
     """
-    Equation of state for non-relativistic gas: P(rho)
+    Equation of state for non-relativistic dark matter: P(rho)
     """
-    return cg.K_nr_dm * (rho * cg.Y_e)**(5/3) / m_dm
+    return cg.K_nr_dm * (rho)**(5/3) / m_dm
 
 def EOS_dm(rho, m_dm):
     """
@@ -83,14 +93,14 @@ def dMdr(r, M, M_dm, rho, m_dm):
     """
     return 4 * cg.pi * r*r *rho
 
-def drhodr_Newt(r, M, M_dm, rho, EOS_deriv, m_dm):
+def drhodr_Newt(r, M, M_dm, rho, EOS, EOS_deriv, m_dm):
     """
     Hydrostatic equilibrium for a star modelled as a Newtonian body
     """
     M_tot = M + M_dm
     return -cg.G * M_tot * rho / r / r / EOS_deriv(rho, m_dm)
 
-def drhodr_TOV(r, M, M_dm, rho, EOS_deriv, m_dm):
+def drhodr_TOV(r, M, M_dm, rho, EOS, EOS_deriv, m_dm):
     """
     Tolman–Oppenheimer–Volkoff equation for a star modelled using general relativity
     """
@@ -101,7 +111,7 @@ def drhodr_TOV(r, M, M_dm, rho, EOS_deriv, m_dm):
             / (1 - 2*cg.G*M_tot/r/cg.c/cg.c) / EOS_deriv(rho, m_dm)
 
 
-def RK4(r0, M0, rho0, r_dm0, M_dm0, rho_dm0, h, f, g, m_dm):
+def RK4(r0, M0, rho0, M_dm0, rho_dm0, h, f, g, m_dm):
     """
     Runge-Kutta method to 4th order to solve two simultaneous ODEs w.r.t. x
     Inputs:
@@ -114,19 +124,16 @@ def RK4(r0, M0, rho0, r_dm0, M_dm0, rho_dm0, h, f, g, m_dm):
     x = r0
     y = M0
     z = rho0
-    x2 = r_dm0
     y2 = M_dm0
     z2 = rho_dm0
     x_list = [x / 6.9634e10]
     y_list = [y / 1.9885e33]
     z_list = [z * 1000]
     P_list = [EOS(z, m_dm) * 0.1]
-    x2_list = []
     y2_list = []
     z2_list = []
     P2_list = []
     if m_dm != 0:
-        x2_list = [x2 / 6.9634e10]
         y2_list = [y2 / 1.9885e33]
         z2_list = [z2 * 1000]
         P2_list = [EOS_dm(z2, m_dm) * 0.1]
@@ -137,21 +144,21 @@ def RK4(r0, M0, rho0, r_dm0, M_dm0, rho_dm0, h, f, g, m_dm):
         k2 = f(x+h/2, y+h/2*k1, y2, z, m_dm)
         k3 = f(x+h, y+h*k2, y2, z, m_dm)
 
-        l0 = g(x, y, y2, z, EOS_deriv, m_dm)
-        l1 = g(x+h/2, y, y2, z+h/2*l0, EOS_deriv, m_dm)
-        l2 = g(x+h/2, y, y2, z+h/2*l1, EOS_deriv, m_dm)
-        l3 = g(x+h, y, y2, z+h*l2, EOS_deriv, m_dm)
+        l0 = g(x, y, y2, z, EOS, EOS_deriv, m_dm)
+        l1 = g(x+h/2, y, y2, z+h/2*l0, EOS, EOS_deriv, m_dm)
+        l2 = g(x+h/2, y, y2, z+h/2*l1, EOS, EOS_deriv, m_dm)
+        l3 = g(x+h, y, y2, z+h*l2, EOS, EOS_deriv, m_dm)
 
         if m_dm != 0:
-            kk0 = f(x2, y, y2, z2, m_dm)
-            kk1 = f(x2+h/2, y, y2+h/2*kk0, z2, m_dm)
-            kk2 = f(x2+h/2, y, y2+h/2*kk1, z2, m_dm)
-            kk3 = f(x2+h, y, y2+h*kk2, z2, m_dm)
+            kk0 = f(x, y, y2, z2, m_dm)
+            kk1 = f(x+h/2, y, y2+h/2*kk0, z2, m_dm)
+            kk2 = f(x+h/2, y, y2+h/2*kk1, z2, m_dm)
+            kk3 = f(x+h, y, y2+h*kk2, z2, m_dm)
 
-            ll0 = g(x2, y, y2, z2, EOS_deriv_dm, m_dm)
-            ll1 = g(x2+h/2, y, y2, z2+h/2*ll0, EOS_deriv_dm, m_dm)
-            ll2 = g(x2+h/2, y, y2, z2+h/2*ll1, EOS_deriv_dm, m_dm)
-            ll3 = g(x2+h, y, y2, z2+h*ll2, EOS_deriv_dm, m_dm)
+            ll0 = g(x, y, y2, z2, EOS_dm, EOS_deriv_dm, m_dm)
+            ll1 = g(x+h/2, y, y2, z2+h/2*ll0, EOS_dm, EOS_deriv_dm, m_dm)
+            ll2 = g(x+h/2, y, y2, z2+h/2*ll1, EOS_dm, EOS_deriv_dm, m_dm)
+            ll3 = g(x+h, y, y2, z2+h*ll2, EOS_dm, EOS_deriv_dm, m_dm)
 
         x = x+h
         y = y + 1/6 * h * (k0 + 2*k1 + 2*k2 + k3)
@@ -168,21 +175,18 @@ def RK4(r0, M0, rho0, r_dm0, M_dm0, rho_dm0, h, f, g, m_dm):
         P_list.append(temp_P)
 
         if m_dm != 0:
-            x2 = x2+h
             y2 = y2 + 1/6 * h * (kk0 + 2*kk1 + 2*kk2 + kk3)
             z2 = z2 + 1/6 * h * (ll0 + 2*ll1 + 2*ll2 + ll3)
             P2 = EOS_dm(z2, m_dm)
 
-            temp_x = x2 / 6.9634e10      # convert r to units of solar radius
             temp_y = y2 / 1.9885e33      # convert M to units of solar mass
             temp_z = z2 * 1000           # convert rho to units of kg/m^3
             temp_P = P2 * 0.1            # convert P to units of Pa
-            x2_list.append(temp_x)
             y2_list.append(temp_y)
             z2_list.append(temp_z)
             P2_list.append(temp_P)
     
-    return x_list, y_list, z_list, P_list, x2_list, y2_list, z2_list, P2_list
+    return x_list, y_list, z_list, P_list, y2_list, z2_list, P2_list
 
 
 def plot_graph(r_list, M_list, rho_list, P_list):

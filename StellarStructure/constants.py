@@ -37,9 +37,12 @@ class CGS_unit:
     c = 2.9979e10
     Y_e = 0.5
     h = 6.6261e-27
+    hbar = h/2/pi
     m_e = 9.1094e-28
-    me4_h3 = (9.1094)**4 / (6.6261)**3 * 1e-31      # m_e^4 / h^3  
+    m_H = 1.6736e-24
 
+    # http://astronomy.nmsu.edu/jasonj/565/docs/09_10.pdf
+    me4_h3 = (9.1094)**4 / (6.6261)**3 * 1e-31      # m_e^4 / h^3  
     m_u = 1.6605e-24                                # rho*Y_e = 9.74e5 * x^3
     k0 = 8*pi*m_u/3 * (h/m_e/c)**(-3)
     K_nr = 8*pi*c**5 / 15 * me4_h3 / k0**(5/3)
@@ -50,6 +53,11 @@ class CGS_unit:
     k0_dm = 8*pi*m_u/3 * (h/GeVc2/c)**(-3)
     K_nr_dm = 8*pi*c**5 / 15 * GeVc2_h3 / k0_dm**(5/3)
     K_rel_dm = 2*pi*c**5 / 3 * GeVc2_h3 / k0_dm**(4/3)
+
+    # exact EOS
+    x_const = 1/m_e/c * (3*pi*pi*hbar**3*Y_e/m_H)**(1/3)
+    me4_hbar3 = (9.1094)**4 / (1.0546)**3 * 1e-31      # m_e^4 / hbar^3
+    K_exact = me4_hbar3 * c**5 /8/pi/pi
 
     G = 6.6741e-8
 
