@@ -30,16 +30,16 @@ class SolveEOS:
             drhodr = fn.drhodr_Newt
         dMdr = fn.dMdr
 
-        r_list, M_list, rho_list, P_list, M_dm_list, rho_dm_list, P_dm_list \
+        r_list, M_list, rho_list, P_list, r_dm_list, M_dm_list, rho_dm_list, P_dm_list \
             = fn.RK4(self.r0, M0, rho0, \
             M_dm0, rho_dm0, self.h, dMdr, drhodr, self.m_dm)
 
         if graph_flag:
             fn.plot_graph(r_list, M_list, rho_list, P_list)
             if self.m_dm != 0:
-                fn.plot_graph(r_list, M_dm_list, rho_dm_list, P_dm_list)
+                fn.plot_graph(r_dm_list, M_dm_list, rho_dm_list, P_dm_list)
 
-        return r_list, M_list, rho_list, P_list, M_dm_list, rho_dm_list, P_dm_list
+        return r_list, M_list, rho_list, P_list, r_dm_list, M_dm_list, rho_dm_list, P_dm_list
 
 if __name__ == '__main__':
     # python -m StellarStructure.SolveEOS

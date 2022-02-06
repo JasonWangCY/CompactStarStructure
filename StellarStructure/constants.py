@@ -40,6 +40,7 @@ class CGS_unit:
     hbar = h/2/pi
     m_e = 9.1094e-28
     m_H = 1.6736e-24
+    GeVc2 = 1.7827e-24                              # 1 GeV/c^2 = 1.7827e-24 g
 
     # http://astronomy.nmsu.edu/jasonj/565/docs/09_10.pdf
     me4_h3 = (9.1094)**4 / (6.6261)**3 * 1e-31      # m_e^4 / h^3  
@@ -48,16 +49,19 @@ class CGS_unit:
     K_nr = 8*pi*c**5 / 15 * me4_h3 / k0**(5/3)
     K_rel = 2*pi*c**5 / 3 * me4_h3 / k0**(4/3)
 
-    GeVc2 = 1.7827e-24                              # 1 GeV/c^2 = 1.7827e-24 g
     GeVc2_h3 = (1.7827)**4 * (6.6261)**3 * 1e-15     # m_dm^4 / h^3
     k0_dm = 8*pi*m_u/3 * (h/GeVc2/c)**(-3)
     K_nr_dm = 8*pi*c**5 / 15 * GeVc2_h3 / k0_dm**(5/3)
     K_rel_dm = 2*pi*c**5 / 3 * GeVc2_h3 / k0_dm**(4/3)
 
-    # exact EOS
+    # ------------------------exact EOS------------------------
     x_const = 1/m_e/c * (3*pi*pi*hbar**3*Y_e/m_H)**(1/3)
     me4_hbar3 = (9.1094)**4 / (1.0546)**3 * 1e-31      # m_e^4 / hbar^3
     K_exact = me4_hbar3 * c**5 /8/pi/pi
+
+    GeVc2_hbar3 = (1.7827)**4 / (1.0546)**3 * 1e-15
+    x_const_dm = 1/GeVc2/c * (3*pi*pi*hbar**3/GeVc2)**(1/3)
+    K_exact_dm = GeVc2_hbar3 * c**5 /8/pi/pi
 
     G = 6.6741e-8
 
